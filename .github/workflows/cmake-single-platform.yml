@@ -28,7 +28,8 @@ jobs:
           libkf6i18n-dev \
           build-essential \
           cmake \
-          file
+          file \
+          rpm
 
     - name: Configure CMake
       # Using relative paths ('.') avoids absolute path mapping bugs in OCI containers
@@ -42,6 +43,7 @@ jobs:
       run: |
         cd build
         cpack -G DEB
+        cpack -G RPM
 
     - name: Upload Debian Package Artifact
       uses: actions/upload-artifact@v4
