@@ -19,23 +19,23 @@ PlasmoidItem {
             anchors.centerIn: parent
             Image {
                 source: "../../assets/rog.png"
-                Layout.preferredWidth: 20
-                Layout.preferredHeight: 20
+                Layout.preferredWidth: 32
+                Layout.preferredHeight: 32
                 fillMode: Image.PreserveAspectFit
             }
         }
     }
 
     fullRepresentation: Item {
-        Layout.minimumWidth: 360
-        Layout.minimumHeight: 620
+        Layout.minimumWidth: 350
+        Layout.minimumHeight: 700 // COMPACT TWEAK: Shrunk overall window height
 
-        property color rogRed: "#E50914"
-        property color bgDark: "#0A0A0A"
-        property color cardBg: "#141414"
-        property color textLight: "#EDEDED"
-        property color textDim: "#7A7A7A"
-        property color borderDark: "#2A2A2A"
+        property color rogRedBase: "#E50914"
+        property color rogRedGlow: "#FF3333"
+        property color textLight: "#FFFFFF"
+        property color textDim: "#888888"
+        property color borderDim: "#333333"
+        property color borderLight: "#4A4A4A"
 
         AsusBackend { id: backend }
 
@@ -54,6 +54,8 @@ PlasmoidItem {
         }
         property int secondsAgo: 0
 
+        // --- Styled Components ---
+
         component ArmouryButton: Controls.Button {
             id: btn
             property string titleText
@@ -62,13 +64,18 @@ PlasmoidItem {
             property string customIcon: ""
 
             Layout.fillWidth: true
-            implicitHeight: 60
+            implicitHeight: 62 // COMPACT TWEAK: Shrunk from 62 to 48
+            implicitWidth: 100
 
             background: Rectangle {
-                color: btn.isActive ? "#2A0B0E" : cardBg
-                border.color: btn.isActive ? rogRed : borderDark
-                border.width: 1
                 radius: 6
+                border.color: btn.isActive ? rogRedGlow : borderDim
+                border.width: btn.isActive ? 2 : 1
+
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: btn.isActive ? "#4A0F14" : "#222222" }
+                    GradientStop { position: 1.0; color: btn.isActive ? "#220508" : "#151515" }
+                }
 
                 Rectangle {
                     anchors.fill: parent
@@ -79,7 +86,7 @@ PlasmoidItem {
             }
 
             contentItem: ColumnLayout {
-                spacing: 2
+                spacing: 0
                 anchors.centerIn: parent
 
                 RowLayout {
@@ -88,45 +95,48 @@ PlasmoidItem {
                     Image {
                         source: btn.customIcon
                         visible: btn.customIcon !== ""
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: 22 // COMPACT TWEAK: slightly smaller icon
+                        Layout.preferredHeight: 22
                         fillMode: Image.PreserveAspectFit
+                        opacity: btn.isActive ? 1.0 : 0.6
                     }
                     Text {
                         text: btn.titleText
-                        color: textLight
-                        font.pixelSize: 13
-                        font.bold: true
+                        color: btn.isActive ? textLight : "#CCCCCC"
+                        font.pixelSize: 16 // COMPACT TWEAK: Shrunk by 1pt
+                        font.bold: btn.isActive
                     }
                 }
                 Text {
                     text: btn.subText
                     color: btn.isActive ? textLight : textDim
-                    font.pixelSize: 11
+                    font.pixelSize: 12 // COMPACT TWEAK: Shrunk by 1pt
                     Layout.alignment: Qt.AlignHCenter
+                    Layout.topMargin: -12
+                    Layout.bottomMargin: 3
                     visible: btn.subText !== ""
                 }
             }
         }
 
-        // FIXED: Replaced Kirigami.Icon with a standard Image component to properly load local assets
         component SectionHeader: RowLayout {
             property string title
             property string iconSource
             spacing: 8
             Layout.fillWidth: true
-            Layout.topMargin: 15
+            Layout.topMargin: 14 // COMPACT TWEAK: Less gap above headers
 
             Image {
                 source: iconSource
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: 18
+                Layout.preferredHeight: 18
                 fillMode: Image.PreserveAspectFit
             }
             Text {
                 text: title
                 color: textLight
-                font.pixelSize: 14
+                font.pixelSize: 20 // COMPACT TWEAK: Slightly smaller header
+                font.bold: true
             }
         }
 
@@ -135,56 +145,69 @@ PlasmoidItem {
             property string value
 
             Layout.fillWidth: true
-            height: 38
-            color: "transparent"
-            border.color: borderDark
-            border.width: 1
+            height: 40 // COMPACT TWEAK: Shrunk from 40 to 34
             radius: 6
+            border.color: borderDim
+            border.width: 1
             Layout.topMargin: 5
+
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#111111" }
+                GradientStop { position: 1.0; color: "#0A0A0A" }
+            }
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: 15
-                anchors.rightMargin: 15
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
 
                 Text {
                     text: label
                     color: textDim
-                    font.pixelSize: 13
+                    font.pixelSize: 12
                     Layout.fillWidth: true
                 }
                 Text {
                     text: value
-                    color: rogRed
-                    font.pixelSize: 13
+                    color: rogRedGlow
+                    font.pixelSize: 12
+                    font.bold: true
                 }
             }
         }
 
+        // --- Main Widget Container ---
         Rectangle {
             anchors.fill: parent
-            color: bgDark
-            radius: 10
-            border.color: borderDark
+            radius: 12
+            border.color: borderLight
             border.width: 1
+
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: "#2B2B2B" }
+                GradientStop { position: 0.2; color: "#1E1E1E" }
+                GradientStop { position: 1.0; color: "#111111" }
+            }
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 20
-                spacing: 10
+                anchors.margins: 16 // COMPACT TWEAK: Tighter outer padding
+                spacing: 8 // COMPACT TWEAK: Tighter spacing between elements
 
+                // Header
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 10
                     Image {
                         source: "../../assets/rog.png"
-                        Layout.preferredWidth: 22
-                        Layout.preferredHeight: 22
+                        Layout.preferredWidth: 28
+                        Layout.preferredHeight: 28
                         fillMode: Image.PreserveAspectFit
                     }
                     Text {
-                        text: "ASUS Armoury"
-                        font.pixelSize: 18
+                        text: "ARMOURY Plasmoid"
+                        font.pixelSize: 26 // COMPACT TWEAK: Slightly smaller title
+                        font.bold: true
                         color: textLight
                         Layout.fillWidth: true
                     }
@@ -193,14 +216,15 @@ PlasmoidItem {
                 Rectangle {
                     Layout.fillWidth: true
                     height: 1
-                    color: borderDark
-                    Layout.topMargin: 5
+                    color: borderDim
+                    Layout.topMargin: 2
                 }
 
+                // Performance Mode
                 SectionHeader { title: "Performance Mode"; iconSource: "../../assets/performance.png" }
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: 6
                     ArmouryButton {
                         titleText: "Silent"; subText: "Quiet"
                         isActive: backend.currentPerformanceMode === "Quiet"
@@ -222,10 +246,11 @@ PlasmoidItem {
                     value: backend.currentPerformanceMode === "Performance" ? "Turbo" : (backend.currentPerformanceMode === "Quiet" ? "Silent" : "Balanced")
                 }
 
+                // GPU Mode
                 SectionHeader { title: "GPU Mode"; iconSource: "../../assets/gpu.png" }
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: 6
                     ArmouryButton {
                         titleText: "Hybrid"; subText: "MUX"
                         isActive: backend.currentGpuMode === "Hybrid"
@@ -244,50 +269,61 @@ PlasmoidItem {
                 }
                 StatusRow { label: "Current GPU"; value: backend.currentGpuMode }
 
+                // Fan Control
                 SectionHeader { title: "Fan Control"; iconSource: "../../assets/fan.png" }
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 8
+                    spacing: 6
                     ArmouryButton {
                         titleText: "Auto"; subText: ""
                         customIcon: "../../assets/rog.png"
                         isActive: backend.currentFanMode === "Auto"
                         onClicked: backend.setFanMode("Auto")
                     }
-                    ArmouryButton {
-                        titleText: "Max"; subText: ""
-                        customIcon: "../../assets/rog.png"
-                        isActive: backend.currentFanMode === "Max"
-                        onClicked: backend.setFanMode("Max")
-                    }
+                    //ArmouryButton {
+                    //    titleText: "Max"; subText: ""
+                    //    customIcon: "../../assets/rog.png"
+                    //    isActive: backend.currentFanMode === "Max"
+                    //    onClicked: backend.setFanMode("Max")
+                    //}
                 }
 
-                Item { Layout.fillHeight: true }
+                Item { Layout.fillHeight: true } // Fills empty space
 
+                // Footer
                 Rectangle {
                     Layout.fillWidth: true
                     height: 1
-                    color: borderDark
+                    color: borderDim
                 }
                 RowLayout {
                     Layout.fillWidth: true
-                    Layout.topMargin: 5
+                    Layout.topMargin: 2
                     Text {
-                        text: "Updated " + root.secondsAgo + "s ago"
+                        text: "Current version 1.0"
                         color: textDim
-                        font.pixelSize: 12
+                        font.pixelSize: 11
                         Layout.fillWidth: true
                     }
                     Controls.Button {
                         icon.name: "view-refresh"
                         flat: true
-                        Layout.preferredWidth: 28
-                        Layout.preferredHeight: 28
+                        Layout.preferredWidth: 20
+                        Layout.preferredHeight: 20
                         onClicked: {
                             backend.refreshStatus()
                             root.secondsAgo = 0
                         }
-                        background: Item {}
+                        background: Rectangle {
+                            color: "transparent"
+                            radius: 14
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: 14
+                                color: "white"
+                                opacity: parent.parent.hovered ? 0.08 : 0
+                            }
+                        }
                     }
                 }
             }
