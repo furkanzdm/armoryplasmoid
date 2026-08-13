@@ -27,20 +27,24 @@ jobs:
           libplasma-dev \
           libkf6i18n-dev \
           build-essential \
-          cmake
+          cmake \
+          file
 
     - name: Configure CMake
-      run: cmake -B ${{ github.workspace }}/build -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} ${{ github.workspace }}
+      # Using relative paths ('.') avoids absolute path mapping bugs in OCI containers
+      run: cmake -B build -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} .
 
     - name: Build
-      run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }}
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
 
     - name: Package with CPack
-      working-directory: ${{ github.workspace }}/build
-      run: cpack -G DEB
+      # Use 'cd' instead of 'working-directory' to safely navigate inside the container
+      run: |
+        cd build
+        cpack -G DEB
 
     - name: Upload Debian Package Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: asus-armoury-plasmoid-deb
-        path: ${{ github.workspace }}/build/*.deb
+        name: armoryplasmoid-deb
+        path: build/*.deb
