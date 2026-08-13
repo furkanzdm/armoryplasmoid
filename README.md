@@ -1,4 +1,4 @@
-# ASUS Armoury KDE Plasmoid (`org.kde.armoryplasmoid`)
+# ASUS Armoury KDE Plasmoid
 
 <img width="560" height="621" alt="image" src="https://github.com/user-attachments/assets/ac4936d8-52af-4f3f-a848-7bb85558867c" />
 
